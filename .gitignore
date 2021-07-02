@@ -1,3 +1,5 @@
 /SpecFlowExtentReport/obj/*
 /SpecFlowExtentReport/bin/*
 /SpecFlowExtentReport/Reports*
+/.vs/*
+/.vs*
