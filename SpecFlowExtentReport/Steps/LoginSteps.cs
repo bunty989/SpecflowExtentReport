@@ -4,6 +4,9 @@ using SpecFlowExtentReport.Framework;
 using SpecFlowExtentReport.Pages;
 using TechTalk.SpecFlow;
 using TechTalk.SpecFlow.Assist;
+[assembly: LevelOfParallelism(4)]
+[assembly: Parallelizable(ParallelScope.Children)]
+
 
 namespace SpecFlowExtentReport.Steps
 {

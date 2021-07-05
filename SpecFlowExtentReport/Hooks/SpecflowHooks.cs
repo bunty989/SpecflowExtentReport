@@ -22,6 +22,7 @@ namespace SpecFlowExtentReport.Hooks
             _driverHelper = driverHelper;
             _screenshotHelper = new ScreenshotHelper(_driverHelper);
         }
+        [ThreadStatic]
         private static ExtentTest feature, scenario, step;
         private static ExtentReports extent;
         private static string reportpath => Path.Combine(Directory.GetParent(@"../../../").FullName, "Extent.html");
@@ -36,13 +37,17 @@ namespace SpecFlowExtentReport.Hooks
         [BeforeTestRun]
         public static void BeforeTestRun()
         {
-            ExtentHtmlReporter htmlReport = new ExtentHtmlReporter(reportpath);
+            ExtentHtmlReporter htmlReport = new(reportpath);
             htmlReport.LoadConfig(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName+"\\ExtentConfig.xml");
             extent = new ExtentReports();
-            extent.AddSystemInfo("Host Name", Environment.MachineName);
-            extent.AddSystemInfo("Environment", "YourQAEnvironment");
-            extent.AddSystemInfo("Domain", Environment.UserDomainName);
-            extent.AddSystemInfo("Username", Environment.UserName);
+            Dictionary<string, string> sysInfo = new()
+            {
+                {"Host Name", Environment.MachineName},
+                {"Environment", "YourQAEnvironment" },
+                {"Domain", Environment.UserDomainName },
+                {"Username", Environment.UserName }
+            };
+            foreach (var info in sysInfo) { extent.AddSystemInfo(info.Key,info.Value); }
             extent.AttachReporter(htmlReport);
         }
 
@@ -68,7 +73,7 @@ namespace SpecFlowExtentReport.Hooks
                 {
                     case "GIVEN":
                         {
-                            step.CreateNode<Given>(context.StepContext.StepInfo.Text).Pass("",AttachScreenshot(context));
+                            step.CreateNode<Given>(context.StepContext.StepInfo.Text).Pass(stepType.Trim(), AttachScreenshot(context));
                             break;
                         }
                     case "WHEN": 
@@ -123,6 +128,7 @@ namespace SpecFlowExtentReport.Hooks
         {
             extent.Flush();
         }
+
         [AfterScenario]
         public void AfterScenario()
         {
