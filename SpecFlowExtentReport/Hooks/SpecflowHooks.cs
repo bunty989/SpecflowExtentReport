@@ -2,10 +2,12 @@
 using AventStack.ExtentReports.Gherkin.Model;
 using AventStack.ExtentReports.Reporter;
 using AventStack.ExtentReports.Reporter.Configuration;
+using Microsoft.Extensions.Configuration;
 using NUnit.Framework;
 using SpecFlowExtentReport.Framework;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -26,6 +28,8 @@ namespace SpecFlowExtentReport.Hooks
         private static ExtentTest feature, scenario, step;
         private static ExtentReports extent;
         private static string reportpath => Path.Combine(Directory.GetParent(@"../../../").FullName, "Extent.html");
+        public static ConfigHelper Config; 
+        private static string configpath => Path.Combine(Directory.GetParent(@"../../../").FullName, "appsettings.json");
 
         [BeforeScenario]
         public void BeforeScenario(ScenarioContext context)
@@ -37,8 +41,17 @@ namespace SpecFlowExtentReport.Hooks
         [BeforeTestRun]
         public static void BeforeTestRun()
         {
+            /*var _config = new ConfigurationBuilder()
+                .AddJsonFile(configpath, optional: false, reloadOnChange: true)
+                .Build();
+            _config.Bind(Config);*/
+            Config = new ConfigHelper();
+            var builder = new ConfigurationBuilder();
+            builder.AddJsonFile(configpath, optional: false, reloadOnChange: true);
+            var configuration = builder.Build();
+            configuration.Bind(Config);
             ExtentHtmlReporter htmlReport = new(reportpath);
-            htmlReport.LoadConfig(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName+"\\ExtentConfig.xml");
+            htmlReport.LoadConfig(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName+ Path.DirectorySeparatorChar+Config.ExtentConfigPath);
             extent = new ExtentReports();
             Dictionary<string, string> sysInfo = new()
             {

@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using OpenQA.Selenium;
 using SpecFlowExtentReport.Framework;
+using SpecFlowExtentReport.Hooks;
 using SpecFlowExtentReport.Pages;
 using TechTalk.SpecFlow;
 using TechTalk.SpecFlow.Assist;
@@ -29,7 +30,7 @@ namespace SpecFlowExtentReport.Steps
         [Given(@"I navigate to application")]
         public void GivenINavigateToApplication()
         {
-            _driverHelper.NavigateTo("http://eaapp.somee.com/");
+            _driverHelper.NavigateTo(SpecflowHooks.Config.ApplicationUrl);
         }
 
         [Given(@"I click the Login link")]
